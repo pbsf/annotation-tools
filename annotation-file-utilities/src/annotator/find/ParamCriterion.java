@@ -18,6 +18,10 @@ public class ParamCriterion implements Criterion {
     this.paramPos = pos;
   }
 
+  public Integer getParamPos() {
+    return paramPos;
+  }
+
   /** {@inheritDoc} */
   @Override
   public boolean isSatisfiedBy(TreePath path, Tree leaf) {
