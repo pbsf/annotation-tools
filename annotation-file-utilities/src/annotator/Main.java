@@ -49,11 +49,12 @@ import annotations.io.IndexFileWriter;
 import annotations.util.coll.VivifyingMap;
 import annotator.find.AnnotationInsertion;
 import annotator.find.CastInsertion;
-import annotator.find.ConstructorInsertion;
 import annotator.find.Criteria;
 import annotator.find.GenericArrayLocationCriterion;
+import annotator.find.InheritedSymbolFinder;
 import annotator.find.Insertion;
 import annotator.find.Insertions;
+import annotator.find.MethodInsertion;
 import annotator.find.NewInsertion;
 import annotator.find.ReceiverInsertion;
 import annotator.find.TreeFinder;
@@ -676,6 +677,7 @@ public class Main {
         fileLineSep = UtilMDE.inferLineSeparator(javafilename);
         src = new Source(javafilename);
         verb.debug("Parsed %s%n", javafilename);
+        InheritedSymbolFinder.setSource(src);  // refactor to set Types only?
       } catch (Source.CompilerException e) {
         e.printStackTrace();
         return;
@@ -752,6 +754,7 @@ public class Main {
           boolean receiverInserted = false;
           boolean newInserted = false;
           boolean constructorInserted = false;
+          Set<String> methodsInserted = new TreeSet<String>();
           Set<String> seen = new TreeSet<String>();
           List<Insertion> toInsertList = new ArrayList<Insertion>(positions.get(pair));
           Collections.reverse(toInsertList);
@@ -823,8 +826,14 @@ public class Main {
               ni.setAnnotationsOnly(newInserted);
               newInserted = true;
             } else if (iToInsert.getKind() == Insertion.Kind.CONSTRUCTOR) {
-              ConstructorInsertion ci = (ConstructorInsertion) iToInsert;
+              MethodInsertion ci = (MethodInsertion) iToInsert;
               if (constructorInserted) { ci.setAnnotationsOnly(true); }
+              constructorInserted = true;
+            } else if (iToInsert.getKind() == Insertion.Kind.METHOD) {
+              MethodInsertion mi = (MethodInsertion) iToInsert;
+              if (methodsInserted.contains(mi.getCriteria().getMethodName())) {
+                mi.setAnnotationsOnly(true);
+              }
               constructorInserted = true;
             }
 

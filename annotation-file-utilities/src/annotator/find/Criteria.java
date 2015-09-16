@@ -106,6 +106,21 @@ public final class Criteria {
   }
 
   /**
+   * Determines whether this is the criteria on a parameter.
+   *
+   * @return true iff this is the criteria on a parameter
+   */
+  public boolean isOnParameter() {
+    for (Criterion c : criteria.values()) {
+      if (c.getKind() == Criterion.Kind.PARAM) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Determines whether this is the criteria on a package.
    *
    * @return true iff this is the criteria on a package
@@ -188,6 +203,18 @@ public final class Criteria {
   }
 
   /**
+   * Returns true if this Criteria is on a method declaration.
+   */
+  public boolean isOnMethodDeclaration() {
+    for (Criterion c : criteria.values()) {
+      if (c.getKind() == Criterion.Kind.IN_METHOD) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Returns true if this Criteria is on the given method.
    */
   public boolean isOnMethod(String methodname) {
@@ -202,12 +229,26 @@ public final class Criteria {
   }
 
   /**
-   * Returns true if this Criteria is on the given method.
+   * Returns true if this Criteria is on a field declaration.
    */
   public boolean isOnFieldDeclaration() {
     for (Criterion c : criteria.values()) {
       if (c.getKind() == Criterion.Kind.FIELD
           && ((FieldCriterion) c).isDeclaration) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns true if this Criteria is on the given field.
+   */
+  public boolean isOnField(String varname) {
+    for (Criterion c : criteria.values()) {
+      if (c.getKind() == Criterion.Kind.FIELD
+          && ((FieldCriterion) c).isDeclaration
+          && ((FieldCriterion) c).varName.equals(varname)) {
         return true;
       }
     }
@@ -297,6 +338,19 @@ public final class Criteria {
       }
     }
     return result;
+  }
+
+  /**
+   * @return zero-based parameter index if this is on a parameter, -1 otherwise
+   */
+  public int getParamPos() {
+    for (Criterion c : criteria.values()) {
+      if (c.getKind() == Criterion.Kind.PARAM) {
+        return ((ParamCriterion) c).getParamPos();
+      }
+    }
+
+    return -1;
   }
 
   // Returns the last one. Should really return the outermost one.
