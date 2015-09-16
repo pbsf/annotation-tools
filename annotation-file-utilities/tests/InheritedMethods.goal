@@ -1,0 +1,14 @@
+package annotator.tests;
+
+abstract class Base {
+  public abstract int f();
+  public int[] g(String[] a, int i) { return new int[0]; }
+}
+
+public class InheritedMethods extends Base {
+  public int f() { return 0; }
+  public @A int @B [] g(@C InheritedMethods this, @D String @E [] arg0, @F int arg1) {
+    super.g(arg0, arg1);
+  }
+}
+
